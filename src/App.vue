@@ -12,30 +12,37 @@ onMounted(() => {
 			const zoomIn = document.querySelector(".zoom-in");
 			const zoomOut = document.querySelector('.zoom-out')
 			const addBtn = document.querySelector('.plus')
-			zoomIn.addEventListener('click', () => {
-				ctx.scale(1.2, 1.2)
-				const keys = ['x', 'y', 'width', 'height']
-				for (const item of canvasItems) {
-					for (const key of keys) {
-						if (item[key]) {
-							item[key] = item[key] * 2
-						}
-					}
-				}
-				draw()
-			})
-			zoomOut.addEventListener('click', () => {
-				ctx.scale(0.8, 0.8)
-				const keys = ['width', 'height', 'xRadius', 'yRadius']
-				for (const item of canvasItems) {
-					for (const key of keys) {
-						if (item[key]) {
-							item[key] = item[key] * .8
-						}
-					}
-				}
-				draw()
-			})
+			// zoomIn.addEventListener('click', () => {
+			// 	ctx.scale(1.2, 1.2)
+			// 	const keys = ['width', 'height']
+			// 	for (const item of canvasItems) {
+			// 		if (item.type === 'card') {
+			// 			for (const key of keys) {
+			// 				if (item[key]) {
+			// 					item[key] += item[key] * .5
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// 	// initCardCircles()
+			// 	zoomValue = 1.2
+			// 	console.log('canvasItems', canvasItems)
+			// 	draw()
+			// })
+			// zoomOut.addEventListener('click', () => {
+			// 	ctx.scale(0.8, 0.8)
+			// 	// const keys = ['width', 'height']
+			// 	// for (const item of canvasItems.filter(item => item.type === 'card')) {
+			// 	// 	for (const key of keys) {
+			// 	// 		if (item[key]) {
+			// 	// 			item[key] = item[key] * .8
+			// 	// 		}
+			// 	// 	}
+			// 	// }
+			// 	// // initCardCircles()
+			// 	zoomValue = .8
+			// 	// draw()
+			// })
 			// zoomOut.addEventListener('click', () => {
 			// 	ctx.scale()
 			// })
@@ -282,7 +289,7 @@ onMounted(() => {
 			let hoverObj = null;
 			let offset = { x: 0, y: 0 };
 			let circleOffset = { x: 0, y: 0 };
-
+			let zoomValue = 1
 			function getMousePos(canvas, e) {
 				const mousePos = canvas.getBoundingClientRect();
 				return {
@@ -291,17 +298,7 @@ onMounted(() => {
 				};
 			}
 
-			let start = null;
-			let isHover = false;
-			function hoverAnimation() {
-				isHover = true;
-				// ctx.fillStyle = `red`;
-				// ctx.fillRect(
-				// 	hoverObj?.x + (hoverObj.width / 2 - 25),
-				// 	hoverObj?.y - 70,
-				// 	50,
-				// 	50
-				// );
+			function hover() {
                 if (cardActionsLoaded) {
                     ctx.drawImage(cardActions, hoverObj?.x + (hoverObj.width / 2 - 50), hoverObj?.y - 50)
                 }
@@ -326,10 +323,10 @@ onMounted(() => {
 						);
 					}
 				});
-				if (hoverObj && !isDragging && !isLineDrawing) {
+				if (hoverObj && !isDragging && !isLineDrawing && !isScrolling) {
 					canvas.style.cursor = "pointer";
 					if (hoverObj.type === "card") {
-						hoverAnimation();
+						hover();
 					}
 					// else if (hoverObj.type === "cardCircle") {
 					// 	let start = null;
@@ -348,7 +345,7 @@ onMounted(() => {
 					// 	requestAnimationFrame(circleAnimation);
 					// 	hoverObjType = hoverObj.type;
 					// }
-				} else {
+				} else if (!isScrolling) {
 					// This piece of code is update function that keeps screen up-to-date. This code executes every time mouseover event triggers.
 					canvas.style.cursor = "initial";
 					ctx.fillStyle = "initial";
@@ -442,12 +439,19 @@ onMounted(() => {
 				}
 				if (isScrolling) {
 					const mousePos = getMousePos(canvas, e)
-					window.scrollTo(-(mousePos.x - offset.x), -(mousePos.y - offset.y))
+					window.scrollBy(-(mousePos.x - offset.x), -(mousePos.y - offset.y))
 				}
 			}
 
 			function onMouseUp(e) {
 				isDragging = false;
+				// if (isScrolling) {
+				// 	const mousePos = getMousePos(canvas, e)
+				// 	window.scrollTo(-(mousePos.x - offset.x), -(mousePos.y - offset.y))
+				// 	offset.x = -(mousePos.x - offset.x)
+				// 	offset.y = -(mousePos.y - offset.y)
+				// 	isScrolling = false
+				// }
 				isScrolling = false
 				if (isLineDrawing) {
 					const mousePos = getMousePos(canvas, e);
@@ -554,6 +558,8 @@ onMounted(() => {
 						circleOffset.y = mousePos.y;
 					}
 				} else {
+					const mousePos = getMousePos(canvas, e)
+					canvas.style.cursor = "grab";
 					offset.x = mousePos.x
 					offset.y = mousePos.y
 					isScrolling = true
