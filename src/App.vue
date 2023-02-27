@@ -10,7 +10,33 @@ onMounted(() => {
 			const undoBtn = document.querySelector(".undo");
 			const redoBtn = document.querySelector(".redo");
 			const zoomIn = document.querySelector(".zoom-in");
-			// zoomIn.addEventListener('click', () => {
+			const zoomOut = document.querySelector('.zoom-out')
+			const addBtn = document.querySelector('.plus')
+			zoomIn.addEventListener('click', () => {
+				ctx.scale(1.2, 1.2)
+				const keys = ['x', 'y', 'width', 'height']
+				for (const item of canvasItems) {
+					for (const key of keys) {
+						if (item[key]) {
+							item[key] = item[key] * 2
+						}
+					}
+				}
+				draw()
+			})
+			zoomOut.addEventListener('click', () => {
+				ctx.scale(0.8, 0.8)
+				const keys = ['width', 'height', 'xRadius', 'yRadius']
+				for (const item of canvasItems) {
+					for (const key of keys) {
+						if (item[key]) {
+							item[key] = item[key] * .8
+						}
+					}
+				}
+				draw()
+			})
+			// zoomOut.addEventListener('click', () => {
 			// 	ctx.scale()
 			// })
 			// let requestAnimationFrameID = null;
@@ -26,8 +52,36 @@ onMounted(() => {
             cardActions.onload = () => {
                 cardActionsLoaded = true
             }
-			blockImage.onload = () => {
-				const cards = canvasItems.filter((item) => item.type === "card");
+			function initCardCircles (card) {
+				if (card) {
+					canvasItems.push({
+						cardId: card.id,
+						type: "cardCircle",
+						circleType: "entry",
+						zIndex: 2,
+						cardId: card.id,
+						x: card.x,
+						y: card.y + 45,
+						xRadius: 10,
+						yRadius: 10,
+						width: 20,
+						height: 20,
+					});
+					canvasItems.push({
+						cardId: card.id,
+						type: "cardCircle",
+						circleType: "out",
+						zIndex: 2,
+						cardId: card.id,
+						x: card.x + card.width,
+						y: card.y + card.height * 0.85,
+						xRadius: 10,
+						yRadius: 10,
+						width: 20,
+						height: 20,
+					});
+				} else {
+					const cards = canvasItems.filter((item) => item.type === "card");
 				for (const card of cards) {
 					// cardCircleEntry.x = dragObj.x - 20;
 					// 	cardCircleEntry.y = dragObj.y + 30;
@@ -61,10 +115,14 @@ onMounted(() => {
 						height: 20,
 					});
 				}
+				}
 				draw();
+			}
+			blockImage.onload = () => {
+				initCardCircles()
 			};
 			const cardCircles = [];
-			const canvasItems = [
+			let canvasItems = [
 				{
 					type: "card",
 					id: 1,
@@ -84,17 +142,7 @@ onMounted(() => {
 					height: 178,
 					isDraggable: true,
 					zIndex: 1,
-				},
-				// {
-				// 	type: "card",
-				// 	id: 3,
-				// 	x: 50,
-				// 	y: 200,
-				// 	width: 230,
-				// 	height: 150,
-				// 	isDraggable: true,
-				// 	zIndex: 1,
-				// },
+				}
 			];
 			function undo() {
 				for (let i = canvasItems.length - 1; i >= 0; i--) {
@@ -121,6 +169,22 @@ onMounted(() => {
 				document.querySelector(".undo-tooltip").style.opacity = 0;
 			});
 			redoBtn.addEventListener("click", redo);
+			let cardLastId = 2
+			addBtn.addEventListener('click', () => {
+				cardLastId += 1
+				const card = {
+					type: "card",
+					id: cardLastId,
+					x: canvasItems.filter(item => item.type === 'card').sort((a, b) => b.x - a.x)[0].x + 300,
+					y: 200,
+					width: 230,
+					height: 178,
+					isDraggable: true,
+					zIndex: 1,
+				}
+				canvasItems.push(card)
+				initCardCircles(card)
+			})
 			function draw() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				canvasItems
@@ -285,8 +349,7 @@ onMounted(() => {
 					// 	hoverObjType = hoverObj.type;
 					// }
 				} else {
-					// Unoptimized moment. This code executes every time mouseover event triggers.
-					// Update: This piece of code is update function that keeps screen up-to-date
+					// This piece of code is update function that keeps screen up-to-date. This code executes every time mouseover event triggers.
 					canvas.style.cursor = "initial";
 					ctx.fillStyle = "initial";
 
@@ -377,10 +440,15 @@ onMounted(() => {
 					);
 					ctx.stroke();
 				}
+				if (isScrolling) {
+					const mousePos = getMousePos(canvas, e)
+					window.scrollTo(-(mousePos.x - offset.x), -(mousePos.y - offset.y))
+				}
 			}
 
 			function onMouseUp(e) {
 				isDragging = false;
+				isScrolling = false
 				if (isLineDrawing) {
 					const mousePos = getMousePos(canvas, e);
 					const selectedCircle = canvasItems.find((obj) => {
@@ -435,6 +503,7 @@ onMounted(() => {
 				dragObj = null;
 				draw();
 			}
+			let isScrolling = false
 			function onMouseDown(e) {
 				const mousePos = getMousePos(canvas, e);
 				dragObj = canvasItems
@@ -484,6 +553,10 @@ onMounted(() => {
 						circleOffset.x = mousePos.x;
 						circleOffset.y = mousePos.y;
 					}
+				} else {
+					offset.x = mousePos.x
+					offset.y = mousePos.y
+					isScrolling = true
 				}
 				// for (const pathWrapper of cardCircles) {
 				// 	if (
@@ -593,7 +666,7 @@ onMounted(() => {
 
 <style scoped>
 			.control-panel {
-				position: absolute;
+				position: fixed;
 				top: 10px;
 				left: 10px;
 				display: flex;
