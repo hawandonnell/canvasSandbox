@@ -10,6 +10,8 @@ onMounted(() => {
 			const undoBtn = document.querySelector(".undo");
 			const redoBtn = document.querySelector(".redo");
 			const addBtn = document.querySelector('.plus')
+			const zoomIn = document.querySelector('.zoom-in')
+			const zoomOut = document.querySelector('.zoom-out')
 			const blockImage = new Image();
             const cardActions = new Image()
             let cardActionsLoaded = false
@@ -18,6 +20,18 @@ onMounted(() => {
             cardActions.onload = () => {
                 cardActionsLoaded = true
             }
+			zoomIn.addEventListener('click', () => {
+				isScaling += 1
+				updateCanvas('zoom-in')
+				draw()
+				calculateLines()
+			})
+			zoomOut.addEventListener('click', () => {
+				isScaling -= 1
+				updateCanvas('zoom-out')
+				draw()
+				calculateLines()
+			})
 			function initCardCircles (card) {
 				if (card) {
 					canvasItems.push({
@@ -28,10 +42,10 @@ onMounted(() => {
 						cardId: card.id,
 						x: card.x,
 						y: card.y + 45,
-						xRadius: 10,
-						yRadius: 10,
-						width: 20,
-						height: 20,
+						xRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						yRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						width: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
+						height: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
 					});
 					canvasItems.push({
 						cardId: card.id,
@@ -41,10 +55,10 @@ onMounted(() => {
 						cardId: card.id,
 						x: card.x + card.width,
 						y: card.y + card.height * 0.85,
-						xRadius: 10,
-						yRadius: 10,
-						width: 20,
-						height: 20,
+						xRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						yRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						width: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
+						height: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
 					});
 				} else {
 					const cards = canvasItems.filter((item) => item.type === "card");
@@ -57,10 +71,10 @@ onMounted(() => {
 						cardId: card.id,
 						x: card.x,
 						y: card.y + 45,
-						xRadius: 10,
-						yRadius: 10,
-						width: 20,
-						height: 20,
+						xRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						yRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						width: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
+						height: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
 					});
 					canvasItems.push({
 						cardId: card.id,
@@ -70,14 +84,45 @@ onMounted(() => {
 						cardId: card.id,
 						x: card.x + card.width,
 						y: card.y + card.height * 0.85,
-						xRadius: 10,
-						yRadius: 10,
-						width: 20,
-						height: 20,
+						xRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						yRadius: isScaling === 0 || 10 / isScaling < 0 ? 10 : isScaling > 0 ? 10 * isScaling : 10 / isScaling,
+						width: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
+						height: isScaling === 0 ? 20 : isScaling > 0 ? 20 * isScaling : 20 / isScaling,
 					});
 				}
 				}
 				draw();
+			}
+			const scale = 1.2
+			function updateCanvas (zoomType, card) {
+				if (card) {
+					card.x *= scale
+					card.y *= scale
+					card.width *= scale
+					card.height *= scale
+				} else {
+					if (zoomType === 'zoom-in') {
+						canvasItems.forEach((item) => {
+							if (item.type === 'card') {
+								item.x *= scale
+								item.y *= scale
+								item.width *= scale
+								item.height *= scale
+							}
+						})
+					} else if (zoomType === 'zoom-out') {
+						canvasItems.forEach((item) => {
+							if (item.type === 'card') {
+								item.x /= scale
+								item.y /= scale
+								item.width /= scale
+								item.height /= scale
+							}
+						})
+					}
+				}
+				canvasItems = canvasItems.filter(item => item.type !== 'cardCircle')
+				initCardCircles()
 			}
 			blockImage.onload = () => {
 				initCardCircles()
@@ -89,8 +134,8 @@ onMounted(() => {
 					id: 1,
 					x: 400,
 					y: 200,
-					width: 230,
-					height: 178,
+					width: 234,
+					height: 180,
 					isDraggable: true,
 					zIndex: 1,
 				},
@@ -99,8 +144,8 @@ onMounted(() => {
 					id: 2,
 					x: 50,
 					y: 50,
-					width: 230,
-					height: 178,
+					width: 234,
+					height: 180,
 					isDraggable: true,
 					zIndex: 1,
 				}
@@ -144,7 +189,10 @@ onMounted(() => {
 					zIndex: 1,
 				}
 				canvasItems.push(card)
-				initCardCircles(card)
+				const zoomType = isScaling === 0 ? false : isScaling > 0 ? 'zoom-in' : 'zoom-out'
+				if (zoomType !== false) {
+					updateCanvas(zoomType, canvasItems.find(item => item.type === 'card' && item.id === cardLastId))
+				}
 			})
 			function draw() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -186,10 +234,17 @@ onMounted(() => {
 								);
 								ctx.stroke();
 							case "card":
-								ctx.drawImage(blockImage, item.x, item.y);
+								if (isScaling === 0) {
+									ctx.drawImage(blockImage, item.x, item.y);
+								} else if (isScaling > 0) {
+									ctx.drawImage(blockImage, item.x, item.y, item.width, item.height);
+								} else if (isScaling < 0) {
+									ctx.drawImage(blockImage, item.x, item.y, item.width, item.height);
+								}
 						}
 					});
 			}
+			let isScaling = 0
 			let isLineDrawing = false;
 			let isDragging = false;
 			let dragObj = null;
@@ -208,6 +263,55 @@ onMounted(() => {
                 if (cardActionsLoaded) {
                     ctx.drawImage(cardActions, hoverObj?.x + (hoverObj.width / 2 - 50), hoverObj?.y - 50)
                 }
+			}
+			function calculateLines () {
+				for (const dragObj of canvasItems) {
+					if (dragObj.type === 'card') {
+						const cardCircleEntry = canvasItems.find(
+						(item) =>
+							item.type === "cardCircle" &&
+							item.circleType === "entry" &&
+							item.cardId === dragObj.id
+					);
+					const cardCircleOut = canvasItems.find(
+						(item) =>
+							item.type === "cardCircle" &&
+							item.circleType === "out" &&
+							item.cardId === dragObj.id
+					);
+					const lines = canvasItems.filter(
+						(item) =>
+							item.type === "line" &&
+							(item.entryCircleId === dragObj.id ||
+								item.outCircleId === dragObj.id)
+					);
+					for (const line of lines) {
+						if (line.entryCircleId === dragObj.id) {
+							const outCircle = canvasItems.find(
+								(item) =>
+									item.circleType === "out" && item.cardId === line.outCircleId
+							);
+							line.lineX = cardCircleEntry.x;
+							line.lineY = cardCircleEntry.y;
+
+							line.initX = outCircle.x;
+							line.initY = outCircle.y;
+						} else if (line.outCircleId === dragObj.id) {
+							const entryCircle = canvasItems.find(
+								(item) =>
+									item.circleType === "entry" &&
+									item.cardId === line.entryCircleId
+							);
+							line.initX = cardCircleOut.x;
+							line.initY = cardCircleOut.y;
+
+							line.lineX = entryCircle.x;
+							line.lineY = entryCircle.y;
+						}
+					}
+					}
+				}
+				draw()
 			}
 			function onMouseMove(e) {
 				const mousePos = getMousePos(canvas, e);
@@ -249,13 +353,13 @@ onMounted(() => {
 					const mousePos = getMousePos(canvas, e);
 					dragObj.x = mousePos.x - offset.x;
 					dragObj.y = mousePos.y - offset.y;
+					// Calculate card's entry/out circles
 					const cardCircleEntry = canvasItems.find(
 						(item) =>
 							item.type === "cardCircle" &&
 							item.circleType === "entry" &&
 							item.cardId === dragObj.id
 					);
-					// Calculate card's entry/out circles
 					const cardCircleOut = canvasItems.find(
 						(item) =>
 							item.type === "cardCircle" &&
@@ -454,6 +558,18 @@ onMounted(() => {
 					/>
 				</svg>
 			</div>
+			<div class="control-panel__item zoom-in">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.5 14L20.5 19L19 20.5L14 15.5V14.71L13.73 14.43C12.554 15.4439 11.0527 16.0011 9.5 16C7.77609 16 6.12279 15.3152 4.90381 14.0962C3.68482 12.8772 3 11.2239 3 9.5C3 7.77609 3.68482 6.12279 4.90381 4.90381C6.12279 3.68482 7.77609 3 9.5 3C11.2239 3 12.8772 3.68482 14.0962 4.90381C15.3152 6.12279 16 7.77609 16 9.5C16 11.11 15.41 12.59 14.43 13.73L14.71 14H15.5ZM9.5 14C12 14 14 12 14 9.5C14 7 12 5 9.5 5C7 5 5 7 5 9.5C5 12 7 14 9.5 14ZM12 10H10V12H9V10H7V9H9V7H10V9H12V10Z" fill="black"/>
+</svg>
+
+			</div>
+			<div class="control-panel__item zoom-out">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.5 14H14.71L14.43 13.73C15.4439 12.554 16.0011 11.0527 16 9.5C16 7.77609 15.3152 6.12279 14.0962 4.90381C12.8772 3.68482 11.2239 3 9.5 3C7.77609 3 6.12279 3.68482 4.90381 4.90381C3.68482 6.12279 3 7.77609 3 9.5C3 11.2239 3.68482 12.8772 4.90381 14.0962C6.12279 15.3152 7.77609 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.5L20.5 19L15.5 14ZM9.5 14C7 14 5 12 5 9.5C5 7 7 5 9.5 5C12 5 14 7 14 9.5C14 12 12 14 9.5 14ZM7 9H12V10H7V9Z" fill="black"/>
+</svg>
+
+			</div>
 			<div class="control-panel__item undo">
 				<svg
 					width="24"
@@ -531,7 +647,7 @@ onMounted(() => {
 				opacity: 0;
 				transition: opacity 0.5s;
 				white-space: nowrap;
-				top: 85px;
+				top: 188px;
 				right: -70px;
 			}
 </style>
