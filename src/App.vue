@@ -9,48 +9,7 @@ onMounted(() => {
 			const ctx = canvas.getContext("2d");
 			const undoBtn = document.querySelector(".undo");
 			const redoBtn = document.querySelector(".redo");
-			const zoomIn = document.querySelector(".zoom-in");
-			const zoomOut = document.querySelector('.zoom-out')
 			const addBtn = document.querySelector('.plus')
-			// zoomIn.addEventListener('click', () => {
-			// 	ctx.scale(1.2, 1.2)
-			// 	const keys = ['width', 'height']
-			// 	for (const item of canvasItems) {
-			// 		if (item.type === 'card') {
-			// 			for (const key of keys) {
-			// 				if (item[key]) {
-			// 					item[key] += item[key] * .5
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// 	// initCardCircles()
-			// 	zoomValue = 1.2
-			// 	console.log('canvasItems', canvasItems)
-			// 	draw()
-			// })
-			// zoomOut.addEventListener('click', () => {
-			// 	ctx.scale(0.8, 0.8)
-			// 	// const keys = ['width', 'height']
-			// 	// for (const item of canvasItems.filter(item => item.type === 'card')) {
-			// 	// 	for (const key of keys) {
-			// 	// 		if (item[key]) {
-			// 	// 			item[key] = item[key] * .8
-			// 	// 		}
-			// 	// 	}
-			// 	// }
-			// 	// // initCardCircles()
-			// 	zoomValue = .8
-			// 	// draw()
-			// })
-			// zoomOut.addEventListener('click', () => {
-			// 	ctx.scale()
-			// })
-			// let requestAnimationFrameID = null;
-			// const ratio = window.devicePixelRatio || 2;
-			// canvas.width = 1000 * ratio;
-			// canvas.height = 1000 * ratio;
-			// ctx.scale(1000 * ratio, 1000 * ratio);
 			const blockImage = new Image();
             const cardActions = new Image()
             let cardActionsLoaded = false
@@ -289,7 +248,6 @@ onMounted(() => {
 			let hoverObj = null;
 			let offset = { x: 0, y: 0 };
 			let circleOffset = { x: 0, y: 0 };
-			let zoomValue = 1
 			function getMousePos(canvas, e) {
 				const mousePos = canvas.getBoundingClientRect();
 				return {
@@ -606,34 +564,6 @@ onMounted(() => {
 					<path
 						d="M20.6667 10H14V3.33334C14 2.8029 13.7893 2.2942 13.4142 1.91912C13.0392 1.54405 12.5304 1.33334 12 1.33334C11.4696 1.33334 10.9609 1.54405 10.5858 1.91912C10.2107 2.2942 10 2.8029 10 3.33334V10H3.33334C2.80291 10 2.2942 10.2107 1.91913 10.5858C1.54406 10.9609 1.33334 11.4696 1.33334 12C1.33334 12.5304 1.54406 13.0391 1.91913 13.4142C2.2942 13.7893 2.80291 14 3.33334 14H10V20.6667C10 21.1971 10.2107 21.7058 10.5858 22.0809C10.9609 22.456 11.4696 22.6667 12 22.6667C12.5304 22.6667 13.0392 22.456 13.4142 22.0809C13.7893 21.7058 14 21.1971 14 20.6667V14H20.6667C21.1971 14 21.7058 13.7893 22.0809 13.4142C22.456 13.0391 22.6667 12.5304 22.6667 12C22.6667 11.4696 22.456 10.9609 22.0809 10.5858C21.7058 10.2107 21.1971 10 20.6667 10Z"
 						fill="white"
-					/>
-				</svg>
-			</div>
-			<div class="control-panel__item zoom-in">
-				<svg
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M15.5 14L20.5 19L19 20.5L14 15.5V14.71L13.73 14.43C12.554 15.4439 11.0527 16.0011 9.5 16C7.77609 16 6.12279 15.3152 4.90381 14.0962C3.68482 12.8772 3 11.2239 3 9.5C3 7.77609 3.68482 6.12279 4.90381 4.90381C6.12279 3.68482 7.77609 3 9.5 3C11.2239 3 12.8772 3.68482 14.0962 4.90381C15.3152 6.12279 16 7.77609 16 9.5C16 11.11 15.41 12.59 14.43 13.73L14.71 14H15.5ZM9.5 14C12 14 14 12 14 9.5C14 7 12 5 9.5 5C7 5 5 7 5 9.5C5 12 7 14 9.5 14ZM12 10H10V12H9V10H7V9H9V7H10V9H12V10Z"
-						fill="black"
-					/>
-				</svg>
-			</div>
-			<div class="control-panel__item zoom-out">
-				<svg
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M15.5 14H14.71L14.43 13.73C15.4439 12.554 16.0011 11.0527 16 9.5C16 7.77609 15.3152 6.12279 14.0962 4.90381C12.8772 3.68482 11.2239 3 9.5 3C7.77609 3 6.12279 3.68482 4.90381 4.90381C3.68482 6.12279 3 7.77609 3 9.5C3 11.2239 3.68482 12.8772 4.90381 14.0962C6.12279 15.3152 7.77609 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.5L20.5 19L15.5 14ZM9.5 14C7 14 5 12 5 9.5C5 7 7 5 9.5 5C12 5 14 7 14 9.5C14 12 12 14 9.5 14ZM7 9H12V10H7V9Z"
-						fill="black"
 					/>
 				</svg>
 			</div>
