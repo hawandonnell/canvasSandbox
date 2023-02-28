@@ -191,7 +191,9 @@ onMounted(() => {
 				canvasItems.push(card)
 				const zoomType = isScaling === 0 ? false : isScaling > 0 ? 'zoom-in' : 'zoom-out'
 				if (zoomType !== false) {
-					updateCanvas(zoomType, canvasItems.find(item => item.type === 'card' && item.id === cardLastId))
+					updateCanvas(zoomType, card)
+				} else {
+					initCardCircles(card)
 				}
 			})
 			function draw() {
