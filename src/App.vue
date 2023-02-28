@@ -172,16 +172,6 @@ onMounted(() => {
 								ctx.strokeStyle = "#828282";
 								ctx.beginPath();
 								ctx.moveTo(item.initX, item.initY);
-								// ctx.lineTo(item.lineX, item.lineY);
-								// P3 + (P0 - P3) * 0.33
-								// ctx.bezierCurveTo(
-								// 	item.initX + (item.lineX - item.initX) * 0.33,
-								// 	item.initY + (item.lineY - item.initY) * 0.33,
-								// 	item.lineX + (item.initX - item.lineX) * 0.33,
-								// 	item.lineY + (item.initY - item.lineY) * 0.33,
-								// 	item.lineX,
-								// 	item.lineY
-								// );
 								const distance = Math.sqrt(
 									(item.lineX - item.initX) ** 2 +
 										(item.lineY - item.initY) ** 2
@@ -197,43 +187,6 @@ onMounted(() => {
 								ctx.stroke();
 							case "card":
 								ctx.drawImage(blockImage, item.x, item.y);
-							// const entryCircle = new Path2D();
-							// const outCircle = new Path2D();
-							// ctx.fillStyle = "gray";
-							// entryCircle.ellipse(
-							// 	item.x,
-							// 	item.y + 30,
-							// 	7,
-							// 	7,
-							// 	0,
-							// 	0,
-							// 	2 * Math.PI
-							// );
-							// outCircle.ellipse(
-							// 	item.x + item.width,
-							// 	item.y + item.height - 30,
-							// 	7,
-							// 	7,
-							// 	0,
-							// 	0,
-							// 	2 * Math.PI
-							// );
-							// cardCircles.push({
-							// 	type: "entry",
-							// 	x: item.x,
-							// 	y: item.y + 30,
-							// 	path: entryCircle,
-							// 	cardId: item.id,
-							// });
-							// cardCircles.push({
-							// 	type: "out",
-							// 	x: item.x + item.width,
-							// 	y: item.y + item.height - 30,
-							// 	path: outCircle,
-							// 	cardId: item.id,
-							// });
-							// ctx.fill(entryCircle);
-							// ctx.fill(outCircle);
 						}
 					});
 			}
