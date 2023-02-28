@@ -49,11 +49,6 @@ onMounted(() => {
 				} else {
 					const cards = canvasItems.filter((item) => item.type === "card");
 				for (const card of cards) {
-					// cardCircleEntry.x = dragObj.x - 20;
-					// 	cardCircleEntry.y = dragObj.y + 30;
-
-					// cardCircleOut.x = dragObj.x + dragObj.width;
-					// 	cardCircleOut.y = dragObj.y + 100;
 					canvasItems.push({
 						cardId: card.id,
 						type: "cardCircle",
@@ -261,7 +256,6 @@ onMounted(() => {
                     ctx.drawImage(cardActions, hoverObj?.x + (hoverObj.width / 2 - 50), hoverObj?.y - 50)
                 }
 			}
-			// hoverObjType = null;
 			function onMouseMove(e) {
 				const mousePos = getMousePos(canvas, e);
 				hoverObj = canvasItems.find((obj) => {
@@ -286,35 +280,13 @@ onMounted(() => {
 					if (hoverObj.type === "card") {
 						hover();
 					}
-					// else if (hoverObj.type === "cardCircle") {
-					// 	let start = null;
-					// 	const circleAnimation = (timestamp) => {
-					// 		if (!start) start = timestamp / 100;
-					// 		if (hoverObj) {
-					// 			hoverObj.xRadius = start / 2;
-					// 			hoverObj.yRadius = start / 2;
-					// 			hoverObj.width = start;
-					// 			hoverObj.height = start;
-					// 		}
-					// 		if (start !== 50 && hoverObj) {
-					// 			requestAnimationFrame(circleAnimation);
-					// 		}
-					// 	};
-					// 	requestAnimationFrame(circleAnimation);
-					// 	hoverObjType = hoverObj.type;
-					// }
 				} else if (!isScrolling) {
 					// This piece of code is update function that keeps screen up-to-date. This code executes every time mouseover event triggers.
 					canvas.style.cursor = "initial";
 					ctx.fillStyle = "initial";
-
-					// start = null;
-					// cancelAnimationFrame(requestAnimationFrameID);
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					draw();
 				}
-				// ctx.clearRect(0, 0, canvas.width, canvas.height);
-				// draw();
 				if (isDragging) {
 					if (dragObj) {
 						canvas.style.cursor = "grab";
@@ -403,13 +375,6 @@ onMounted(() => {
 
 			function onMouseUp(e) {
 				isDragging = false;
-				// if (isScrolling) {
-				// 	const mousePos = getMousePos(canvas, e)
-				// 	window.scrollTo(-(mousePos.x - offset.x), -(mousePos.y - offset.y))
-				// 	offset.x = -(mousePos.x - offset.x)
-				// 	offset.y = -(mousePos.y - offset.y)
-				// 	isScrolling = false
-				// }
 				isScrolling = false
 				if (isLineDrawing) {
 					const mousePos = getMousePos(canvas, e);
@@ -439,26 +404,6 @@ onMounted(() => {
 							lineY: selectedCircle.y,
 						});
 					}
-					// dragObj = canvasItems.find((obj) => {
-					// 	return (
-					// 		obj.type === "lineEntry" &&
-					// 		mousePos.x >= obj.x &&
-					// 		mousePos.x <= obj.x + obj.width &&
-					// 		mousePos.y >= obj.y &&
-					// 		mousePos.y <= obj.y + obj.height
-					// 	);
-					// });
-					// if (dragObj) {
-					// 	canvasItems.push({
-					// 		type: "line",
-					// 		added: true,
-					// 		initX: offset.x,
-					// 		initY: offset.y,
-					// 		lineX: mousePos.x,
-					// 		lineY: mousePos.y,
-					// 	});
-					// }
-					// isLineDrawing = false;
 				}
 				isLineDrawing = false;
 				canvas.style.cursor = "initial";
@@ -522,17 +467,6 @@ onMounted(() => {
 					offset.y = mousePos.y
 					isScrolling = true
 				}
-				// for (const pathWrapper of cardCircles) {
-				// 	if (
-				// 		pathWrapper.type === "out" &&
-				// 		ctx.isPointInPath(pathWrapper.path, mousePos.x, mousePos.y)
-				// 	) {
-				// 		circleOffset.x = pathWrapper.x;
-				// 		circleOffset.y = pathWrapper.y;
-				// 		isLineDrawing = true;
-				// 		isDragging = false;
-				// 	}
-				// }
 			}
 
 			canvas.addEventListener("mousemove", onMouseMove);
@@ -644,7 +578,7 @@ onMounted(() => {
 				opacity: 0;
 				transition: opacity 0.5s;
 				white-space: nowrap;
-				top: 188px;
+				top: 85px;
 				right: -70px;
 			}
 </style>
